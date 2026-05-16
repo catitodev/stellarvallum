@@ -21,24 +21,60 @@ pub fn detect_secrets(code: &str, file_path: &str) -> Vec<Finding> {
 
     let patterns: Vec<(&str, &str, Severity)> = vec![
         // Stellar secret keys (S + 55 base32 chars)
-        (r"S[A-Z2-7]{55}", "Stellar Secret Key (S...)", Severity::Critical),
+        (
+            r"S[A-Z2-7]{55}",
+            "Stellar Secret Key (S...)",
+            Severity::Critical,
+        ),
         // Generic API keys
-        (r#"(?i)(api[_-]?key|apikey)\s*[=:]\s*["'][^"']{10,}"#, "Hardcoded API Key", Severity::High),
+        (
+            r#"(?i)(api[_-]?key|apikey)\s*[=:]\s*["'][^"']{10,}"#,
+            "Hardcoded API Key",
+            Severity::High,
+        ),
         // OpenRouter / OpenAI keys
-        (r"sk-or-[a-zA-Z0-9]{20,}", "OpenRouter API Key", Severity::Critical),
-        (r"sk-[a-zA-Z0-9]{20,}", "OpenAI-style API Key", Severity::Critical),
+        (
+            r"sk-or-[a-zA-Z0-9]{20,}",
+            "OpenRouter API Key",
+            Severity::Critical,
+        ),
+        (
+            r"sk-[a-zA-Z0-9]{20,}",
+            "OpenAI-style API Key",
+            Severity::Critical,
+        ),
         // AWS keys
         (r"AKIA[0-9A-Z]{16}", "AWS Access Key ID", Severity::Critical),
         // Private keys (PEM)
-        (r"-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----", "Private Key (PEM)", Severity::Critical),
+        (
+            r"-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----",
+            "Private Key (PEM)",
+            Severity::Critical,
+        ),
         // Generic secrets in assignments
-        (r#"(?i)(secret|password|passwd|token)\s*[=:]\s*["'][^"']{8,}"#, "Hardcoded Secret/Password", Severity::High),
+        (
+            r#"(?i)(secret|password|passwd|token)\s*[=:]\s*["'][^"']{8,}"#,
+            "Hardcoded Secret/Password",
+            Severity::High,
+        ),
         // Hex-encoded keys (64 chars = 32 bytes)
-        (r#"(?i)(private[_-]?key|secret[_-]?key)\s*[=:]\s*["'][0-9a-fA-F]{64}["']"#, "Hex Private Key", Severity::Critical),
+        (
+            r#"(?i)(private[_-]?key|secret[_-]?key)\s*[=:]\s*["'][0-9a-fA-F]{64}["']"#,
+            "Hex Private Key",
+            Severity::Critical,
+        ),
         // JWT tokens
-        (r"eyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}", "JWT Token", Severity::High),
+        (
+            r"eyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}",
+            "JWT Token",
+            Severity::High,
+        ),
         // Webhook URLs with tokens
-        (r"https://hooks\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[a-zA-Z0-9]+", "Slack Webhook URL", Severity::Medium),
+        (
+            r"https://hooks\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[a-zA-Z0-9]+",
+            "Slack Webhook URL",
+            Severity::Medium,
+        ),
     ];
 
     for (pattern, title, severity) in &patterns {
@@ -51,13 +87,17 @@ pub fn detect_secrets(code: &str, file_path: &str) -> Vec<Finding> {
             let line_num = analysis_code[..mat.start()].lines().count();
 
             // Skip if it's in a comment or test
-            let line = analysis_code.lines().nth(line_num.saturating_sub(1)).unwrap_or("");
+            let line = analysis_code
+                .lines()
+                .nth(line_num.saturating_sub(1))
+                .unwrap_or("");
             if line.trim_start().starts_with("//")
                 || line.trim_start().starts_with('#')
                 || line.contains("example")
                 || line.contains("placeholder")
                 || line.contains("test")
-                || line.contains("${")  // Environment variable reference
+                || line.contains("${")
+            // Environment variable reference
             {
                 continue;
             }
@@ -106,7 +146,9 @@ mod tests {
         let code = r#"let key = "SCZANGBA5YHTNYVVV3C7CAZMCLXPILHSE2YQRCBI5VRGCO3WU66RGQ5R";"#;
         let findings = detect_secrets(code, "src/main.rs");
         assert!(!findings.is_empty());
-        assert!(findings.iter().any(|f| f.title.contains("Stellar Secret Key")));
+        assert!(findings
+            .iter()
+            .any(|f| f.title.contains("Stellar Secret Key")));
     }
 
     #[test]

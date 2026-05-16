@@ -3,8 +3,8 @@
 #![allow(dead_code)]
 
 use super::*;
-use async_trait::async_trait;
 use crate::secret::Secret;
+use async_trait::async_trait;
 use tracing::{debug, info};
 
 pub struct OpenRouterProvider {
@@ -40,7 +40,8 @@ impl AIProvider for OpenRouterProvider {
 
         debug!("Sending to OpenRouter...");
 
-        let resp = self.client
+        let resp = self
+            .client
             .post("https://openrouter.ai/api/v1/chat/completions")
             .header("Authorization", format!("Bearer {}", self.api_key.expose()))
             .header("Content-Type", "application/json")
@@ -56,7 +57,10 @@ impl AIProvider for OpenRouterProvider {
             return Err(AIError::AuthFailed);
         }
 
-        let json: Value = resp.json().await.map_err(|e| AIError::InvalidResponse(e.to_string()))?;
+        let json: Value = resp
+            .json()
+            .await
+            .map_err(|e| AIError::InvalidResponse(e.to_string()))?;
         Ok(json)
     }
 

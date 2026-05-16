@@ -8,7 +8,10 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum PathError {
     #[error("Cannot resolve path '{path}': {source}")]
-    ResolveError { path: String, source: std::io::Error },
+    ResolveError {
+        path: String,
+        source: std::io::Error,
+    },
 
     #[error("Path traversal detected: '{path}' is outside allowed directory '{allowed}'")]
     TraversalDetected { path: String, allowed: String },

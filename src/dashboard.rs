@@ -1,11 +1,6 @@
 //! Dashboard — Axum REST API server for security metrics.
 
-use axum::{
-    extract::State,
-    response::Json,
-    routing::get,
-    Router,
-};
+use axum::{extract::State, response::Json, routing::get, Router};
 use serde::Serialize;
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;

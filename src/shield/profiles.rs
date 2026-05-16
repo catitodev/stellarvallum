@@ -21,7 +21,9 @@ impl ScanProfile {
             ScanProfile::Backend => vec!["rs", "ts", "js", "toml", "json"],
             ScanProfile::Config => vec!["toml", "yaml", "yml", "json", "env"],
             ScanProfile::Pipeline => vec!["yml", "yaml"],
-            ScanProfile::Full => vec!["rs", "ts", "tsx", "js", "jsx", "toml", "yaml", "yml", "json", "env"],
+            ScanProfile::Full => vec![
+                "rs", "ts", "tsx", "js", "jsx", "toml", "yaml", "yml", "json", "env",
+            ],
         }
     }
 }
@@ -65,7 +67,8 @@ pub async fn detect_profile(path: &Path) -> ScanProfile {
         if let Ok(content) = tokio::fs::read_to_string(&package_json).await {
             if content.contains("@stellar/stellar-sdk") || content.contains("soroban-client") {
                 // Check if it's a frontend or backend
-                if content.contains("react") || content.contains("next") || content.contains("vue") {
+                if content.contains("react") || content.contains("next") || content.contains("vue")
+                {
                     return ScanProfile::Dapp;
                 }
                 return ScanProfile::Backend;

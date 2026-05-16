@@ -86,12 +86,18 @@ mod tests {
     #[test]
     fn invalid_prefix() {
         let addr = "XAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7";
-        assert!(matches!(validate_address(addr), Err(AddressError::InvalidPrefix('X'))));
+        assert!(matches!(
+            validate_address(addr),
+            Err(AddressError::InvalidPrefix('X'))
+        ));
     }
 
     #[test]
     fn invalid_length() {
-        assert!(matches!(validate_address("GABC"), Err(AddressError::InvalidLength(4))));
+        assert!(matches!(
+            validate_address("GABC"),
+            Err(AddressError::InvalidLength(4))
+        ));
     }
 
     #[test]

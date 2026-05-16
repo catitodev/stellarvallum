@@ -112,11 +112,7 @@ pub async fn run(
     Ok(())
 }
 
-async fn execute_vector(
-    vector: &str,
-    _contract_id: &str,
-    _client: &SorobanClient,
-) -> AttackResult {
+async fn execute_vector(vector: &str, _contract_id: &str, _client: &SorobanClient) -> AttackResult {
     // Each vector would build and submit a real transaction.
     // For now, we validate the contract's behavior based on its WASM analysis.
     // Full transaction submission requires XDR building (stellar-xdr crate).

@@ -135,13 +135,24 @@ async fn main() -> anyhow::Result<()> {
     }
 
     match cli.command {
-        Commands::Scan { path, profile, mode, output, out_file } => {
+        Commands::Scan {
+            path,
+            profile,
+            mode,
+            output,
+            out_file,
+        } => {
             shield::scan(&cfg, &path, &profile, &mode, &output, out_file.as_deref()).await?;
         }
         Commands::DeployTestnet { wasm, secret_key } => {
             network::deploy_testnet(&cfg, &wasm, &secret_key).await?;
         }
-        Commands::Spear { wasm, secret_key, attacks, max_tx } => {
+        Commands::Spear {
+            wasm,
+            secret_key,
+            attacks,
+            max_tx,
+        } => {
             spear::run(&cfg, &wasm, &secret_key, &attacks, max_tx).await?;
         }
         Commands::Dashboard { port } => {

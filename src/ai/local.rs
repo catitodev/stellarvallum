@@ -35,14 +35,20 @@ impl AIProvider for LocalProvider {
 
         debug!("Sending to local LLM: {}", self.endpoint);
 
-        let resp = self.client
+        let resp = self
+            .client
             .post(format!("{}/api/generate", self.endpoint))
             .json(&body)
             .send()
             .await
-            .map_err(|e| AIError::ProviderUnavailable(format!("Cannot reach {}: {}", self.endpoint, e)))?;
+            .map_err(|e| {
+                AIError::ProviderUnavailable(format!("Cannot reach {}: {}", self.endpoint, e))
+            })?;
 
-        let json: Value = resp.json().await.map_err(|e| AIError::InvalidResponse(e.to_string()))?;
+        let json: Value = resp
+            .json()
+            .await
+            .map_err(|e| AIError::InvalidResponse(e.to_string()))?;
         Ok(json)
     }
 

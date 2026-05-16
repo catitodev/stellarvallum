@@ -56,7 +56,14 @@ pub fn build_chain(events: &[(String, String, String, String)]) -> Vec<AuditEven
     let mut prev_hash = "genesis".to_string();
 
     for (contract_id, event_type, severity, description) in events {
-        let event = create_event(contract_id, event_type, severity, description, None, &prev_hash);
+        let event = create_event(
+            contract_id,
+            event_type,
+            severity,
+            description,
+            None,
+            &prev_hash,
+        );
         prev_hash = event.hash.clone();
         chain.push(event);
     }

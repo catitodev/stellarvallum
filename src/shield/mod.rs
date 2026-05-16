@@ -87,8 +87,10 @@ pub async fn scan(
     all_findings.dedup_by(|a, b| a.title == b.title && a.location == b.location);
 
     let score = calculate_score(&all_findings);
-    let mainnet_ready =
-        score >= 80 && !all_findings.iter().any(|f| f.severity == Severity::Critical);
+    let mainnet_ready = score >= 80
+        && !all_findings
+            .iter()
+            .any(|f| f.severity == Severity::Critical);
 
     let result = ScanResult {
         score,
@@ -147,7 +149,10 @@ pub async fn scan(
                 Severity::Low => "🔵",
                 Severity::Info => "⚪",
             };
-            println!("  {} [{:?}] {} — {}", icon, f.severity, f.title, f.description);
+            println!(
+                "  {} [{:?}] {} — {}",
+                icon, f.severity, f.title, f.description
+            );
             if let Some(loc) = &f.location {
                 println!("     at {}", loc);
             }

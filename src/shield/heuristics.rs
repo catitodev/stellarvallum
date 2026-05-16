@@ -50,7 +50,8 @@ pub fn run_dapp_heuristics(code: &str, file: &str) -> Vec<Finding> {
     let mut f = Vec::new();
 
     // Hardcoded RPC URLs (should be env vars)
-    if (code.contains("soroban-testnet.stellar.org") || code.contains("horizon-testnet.stellar.org"))
+    if (code.contains("soroban-testnet.stellar.org")
+        || code.contains("horizon-testnet.stellar.org"))
         && !code.contains("process.env")
         && !code.contains("import.meta.env")
     {
@@ -67,12 +68,16 @@ pub fn run_dapp_heuristics(code: &str, file: &str) -> Vec<Finding> {
 
     // Contract IDs hardcoded (should be configurable)
     let contract_re = Regex::new(r"C[A-Z2-7]{55}").unwrap();
-    if contract_re.is_match(code) && !code.contains("process.env") && !code.contains("import.meta.env") {
+    if contract_re.is_match(code)
+        && !code.contains("process.env")
+        && !code.contains("import.meta.env")
+    {
         f.push(Finding {
             severity: Severity::Low,
             category: "dapp_config".into(),
             title: "Hardcoded Contract ID".into(),
-            description: "Contract ID hardcoded — consider making configurable for multi-network".into(),
+            description: "Contract ID hardcoded — consider making configurable for multi-network"
+                .into(),
             location: Some(file.to_string()),
             fix: Some("Use environment variable for contract IDs".into()),
             owasp_id: None,
@@ -93,12 +98,15 @@ pub fn run_dapp_heuristics(code: &str, file: &str) -> Vec<Finding> {
     }
 
     // localStorage for sensitive data
-    if code.contains("localStorage.setItem") && (code.contains("key") || code.contains("secret") || code.contains("token")) {
+    if code.contains("localStorage.setItem")
+        && (code.contains("key") || code.contains("secret") || code.contains("token"))
+    {
         f.push(Finding {
             severity: Severity::High,
             category: "dapp_security".into(),
             title: "Sensitive Data in localStorage".into(),
-            description: "Storing potentially sensitive data in localStorage (accessible via XSS)".into(),
+            description: "Storing potentially sensitive data in localStorage (accessible via XSS)"
+                .into(),
             location: Some(file.to_string()),
             fix: Some("Use secure session storage or avoid storing secrets client-side".into()),
             owasp_id: None,
@@ -142,7 +150,8 @@ pub fn run_backend_heuristics(code: &str, file: &str) -> Vec<Finding> {
         && !code.contains("tower::limit")
         && !code.contains("RequestBodyLimit")
         && !code.contains("ServiceBuilder")
-        && !code.contains("127.0.0.1") // localhost-only is a valid mitigation
+        && !code.contains("127.0.0.1")
+    // localhost-only is a valid mitigation
     {
         f.push(Finding {
             severity: Severity::Medium,
@@ -157,13 +166,15 @@ pub fn run_backend_heuristics(code: &str, file: &str) -> Vec<Finding> {
 
     // Secret key used directly (not from env)
     if code.contains("Keypair::from_secret") || code.contains("from_secret_key") {
-        let has_env = code.contains("std::env::var") || code.contains("env::var") || code.contains("dotenv");
+        let has_env =
+            code.contains("std::env::var") || code.contains("env::var") || code.contains("dotenv");
         if !has_env {
             f.push(Finding {
                 severity: Severity::High,
                 category: "backend_security".into(),
                 title: "Secret Key Without Env Var".into(),
-                description: "Secret key loaded without environment variable — may be hardcoded".into(),
+                description: "Secret key loaded without environment variable — may be hardcoded"
+                    .into(),
                 location: Some(file.to_string()),
                 fix: Some("Load secret keys from environment variables only".into()),
                 owasp_id: None,
@@ -184,7 +195,9 @@ pub fn run_config_heuristics(code: &str, file: &str) -> Vec<Finding> {
     // Actual values in config (not env var references)
     if file.ends_with(".toml") || file.ends_with(".yaml") || file.ends_with(".yml") {
         // Check for actual secret values (not ${VAR} references)
-        let key_value_re = Regex::new(r#"(?i)(api_key|secret|password|token)\s*[=:]\s*["']([^$][^"']+)["']"#).unwrap();
+        let key_value_re =
+            Regex::new(r#"(?i)(api_key|secret|password|token)\s*[=:]\s*["']([^$][^"']+)["']"#)
+                .unwrap();
         for cap in key_value_re.captures_iter(code) {
             let value = &cap[2];
             if value.len() > 5 && !value.contains("example") && !value.contains("changeme") {
@@ -192,7 +205,10 @@ pub fn run_config_heuristics(code: &str, file: &str) -> Vec<Finding> {
                     severity: Severity::High,
                     category: "config_security".into(),
                     title: "Secret Value in Config File".into(),
-                    description: format!("Config file contains what appears to be a real secret value for '{}'", &cap[1]),
+                    description: format!(
+                        "Config file contains what appears to be a real secret value for '{}'",
+                        &cap[1]
+                    ),
                     location: Some(file.to_string()),
                     fix: Some("Use ${ENV_VAR} reference or move to .env file".into()),
                     owasp_id: None,
@@ -207,7 +223,9 @@ pub fn run_config_heuristics(code: &str, file: &str) -> Vec<Finding> {
             severity: Severity::Critical,
             category: "config_security".into(),
             title: "Mainnet Passphrase in Testnet Config".into(),
-            description: "Mainnet network passphrase found in what appears to be testnet configuration".into(),
+            description:
+                "Mainnet network passphrase found in what appears to be testnet configuration"
+                    .into(),
             location: Some(file.to_string()),
             fix: Some("Use 'Test SDF Network ; September 2015' for testnet".into()),
             owasp_id: None,
@@ -225,14 +243,14 @@ pub fn run_pipeline_heuristics(code: &str, file: &str) -> Vec<Finding> {
     let mut f = Vec::new();
 
     // Secrets in plain text in workflow files
-    if (code.contains("PRIVATE_KEY:") || code.contains("SECRET_KEY:"))
-        && !code.contains("${{")
-    {
+    if (code.contains("PRIVATE_KEY:") || code.contains("SECRET_KEY:")) && !code.contains("${{") {
         f.push(Finding {
             severity: Severity::Critical,
             category: "pipeline_security".into(),
             title: "Secret in Pipeline Config".into(),
-            description: "Secret appears to be hardcoded in CI/CD config instead of using ${{ secrets.* }}".into(),
+            description:
+                "Secret appears to be hardcoded in CI/CD config instead of using ${{ secrets.* }}"
+                    .into(),
             location: Some(file.to_string()),
             fix: Some("Use ${{ secrets.YOUR_SECRET }} for sensitive values".into()),
             owasp_id: None,
@@ -245,7 +263,8 @@ pub fn run_pipeline_heuristics(code: &str, file: &str) -> Vec<Finding> {
             severity: Severity::Medium,
             category: "pipeline_security".into(),
             title: "Deploy Without Approval Gate".into(),
-            description: "Deployment step without environment protection or approval requirement".into(),
+            description: "Deployment step without environment protection or approval requirement"
+                .into(),
             location: Some(file.to_string()),
             fix: Some("Add 'environment: production' with required reviewers".into()),
             owasp_id: None,
@@ -261,19 +280,32 @@ pub fn run_pipeline_heuristics(code: &str, file: &str) -> Vec<Finding> {
 
 fn check_access_control(code: &str, file: &str) -> Vec<Finding> {
     let mut findings = Vec::new();
-    let privileged = ["transfer", "mint", "burn", "admin", "upgrade", "set_admin", "withdraw", "pause", "unpause"];
+    let privileged = [
+        "transfer",
+        "mint",
+        "burn",
+        "admin",
+        "upgrade",
+        "set_admin",
+        "withdraw",
+        "pause",
+        "unpause",
+    ];
     let fn_re = Regex::new(r"(?m)^\s*pub\s+fn\s+(\w+)").unwrap();
 
     for cap in fn_re.captures_iter(code) {
         let fn_name = &cap[1];
         let fn_start = cap.get(0).unwrap().start();
-        if !privileged.iter().any(|p| fn_name.contains(p)) { continue; }
+        if !privileged.iter().any(|p| fn_name.contains(p)) {
+            continue;
+        }
 
         let fn_body = get_fn_body(code, fn_start);
         if !fn_body.contains("require_auth") {
             let line = code[..fn_start].lines().count();
             findings.push(Finding {
-                severity: Severity::Critical, category: "access_control".into(),
+                severity: Severity::Critical,
+                category: "access_control".into(),
                 title: "Missing Authorization".into(),
                 description: format!("'{}' lacks require_auth", fn_name),
                 location: Some(format!("{}:{}:{}", file, fn_name, line)),
@@ -289,17 +321,26 @@ fn check_input_validation(code: &str, file: &str) -> Vec<Finding> {
     let mut f = Vec::new();
     if code.contains("from_val") && !code.contains("try_from_val") {
         f.push(Finding {
-            severity: Severity::High, category: "input_validation".into(),
-            title: "Unsafe Val Conversion".into(), description: "from_val without try_from_val".into(),
-            location: Some(file.to_string()), fix: Some("Use try_from_val".into()),
+            severity: Severity::High,
+            category: "input_validation".into(),
+            title: "Unsafe Val Conversion".into(),
+            description: "from_val without try_from_val".into(),
+            location: Some(file.to_string()),
+            fix: Some("Use try_from_val".into()),
             owasp_id: Some("SC05".into()),
         });
     }
-    if (code.contains("Vec<") || code.contains("Map<")) && !code.contains(".len()") && code.contains("pub fn") {
+    if (code.contains("Vec<") || code.contains("Map<"))
+        && !code.contains(".len()")
+        && code.contains("pub fn")
+    {
         f.push(Finding {
-            severity: Severity::Medium, category: "input_validation".into(),
-            title: "Unbounded Collection".into(), description: "Vec/Map without length check".into(),
-            location: Some(file.to_string()), fix: Some("Add length validation".into()),
+            severity: Severity::Medium,
+            category: "input_validation".into(),
+            title: "Unbounded Collection".into(),
+            description: "Vec/Map without length check".into(),
+            location: Some(file.to_string()),
+            fix: Some("Add length validation".into()),
             owasp_id: Some("SC05".into()),
         });
     }
@@ -308,21 +349,30 @@ fn check_input_validation(code: &str, file: &str) -> Vec<Finding> {
 
 fn check_arithmetic(code: &str, file: &str) -> Vec<Finding> {
     let mut f = Vec::new();
-    let has_arith = code.contains(" + ") || code.contains(" - ") || code.contains(" * ") || code.contains(" / ");
+    let has_arith = code.contains(" + ")
+        || code.contains(" - ")
+        || code.contains(" * ")
+        || code.contains(" / ");
     let has_checked = code.contains("checked_") || code.contains("saturating_");
     if has_arith && !has_checked {
         f.push(Finding {
-            severity: Severity::Medium, category: "arithmetic_error".into(),
-            title: "Unchecked Arithmetic".into(), description: "No checked/saturating ops".into(),
-            location: Some(file.to_string()), fix: Some("Use checked_add/sub/mul/div".into()),
+            severity: Severity::Medium,
+            category: "arithmetic_error".into(),
+            title: "Unchecked Arithmetic".into(),
+            description: "No checked/saturating ops".into(),
+            location: Some(file.to_string()),
+            fix: Some("Use checked_add/sub/mul/div".into()),
             owasp_id: Some("SC07".into()),
         });
     }
     if code.contains(" / ") && !code.contains("!= 0") && !code.contains("> 0") {
         f.push(Finding {
-            severity: Severity::High, category: "arithmetic_error".into(),
-            title: "Division Without Zero Check".into(), description: "No zero-divisor check".into(),
-            location: Some(file.to_string()), fix: Some("Check divisor != 0".into()),
+            severity: Severity::High,
+            category: "arithmetic_error".into(),
+            title: "Division Without Zero Check".into(),
+            description: "No zero-divisor check".into(),
+            location: Some(file.to_string()),
+            fix: Some("Check divisor != 0".into()),
             owasp_id: Some("SC07".into()),
         });
     }
@@ -341,7 +391,8 @@ fn check_reentrancy(code: &str, file: &str) -> Vec<Finding> {
             if after.contains("storage()") || after.contains(".set(") {
                 let line = code[..fn_start].lines().count();
                 f.push(Finding {
-                    severity: Severity::Critical, category: "reentrancy".into(),
+                    severity: Severity::Critical,
+                    category: "reentrancy".into(),
                     title: "CEI Violation".into(),
                     description: format!("'{}' modifies state after invoke_contract", fn_name),
                     location: Some(format!("{}:{}:{}", file, fn_name, line)),
@@ -356,7 +407,9 @@ fn check_reentrancy(code: &str, file: &str) -> Vec<Finding> {
 
 fn check_upgradeability(code: &str, file: &str) -> Vec<Finding> {
     let mut f = Vec::new();
-    if !code.contains("update_current_contract_wasm") { return f; }
+    if !code.contains("update_current_contract_wasm") {
+        return f;
+    }
     let fn_re = Regex::new(r"(?m)^\s*pub\s+fn\s+(\w+)").unwrap();
     for cap in fn_re.captures_iter(code) {
         let fn_name = &cap[1];
@@ -365,7 +418,8 @@ fn check_upgradeability(code: &str, file: &str) -> Vec<Finding> {
         if body.contains("update_current_contract_wasm") && !body.contains("require_auth") {
             let line = code[..fn_start].lines().count();
             f.push(Finding {
-                severity: Severity::Critical, category: "upgradeability".into(),
+                severity: Severity::Critical,
+                category: "upgradeability".into(),
                 title: "Unprotected Upgrade".into(),
                 description: format!("'{}' upgrades without auth", fn_name),
                 location: Some(format!("{}:{}:{}", file, fn_name, line)),
@@ -382,16 +436,24 @@ fn check_ttl_archival(code: &str, file: &str) -> Vec<Finding> {
     let has_ttl = code.contains("extend_ttl") || code.contains("bump(");
     if code.contains("persistent()") && !has_ttl {
         f.push(Finding {
-            severity: Severity::High, category: "ttl_archival".into(),
-            title: "No TTL Extension".into(), description: "Persistent storage without extend_ttl".into(),
-            location: Some(file.to_string()), fix: Some("Call extend_ttl".into()), owasp_id: None,
+            severity: Severity::High,
+            category: "ttl_archival".into(),
+            title: "No TTL Extension".into(),
+            description: "Persistent storage without extend_ttl".into(),
+            location: Some(file.to_string()),
+            fix: Some("Call extend_ttl".into()),
+            owasp_id: None,
         });
     }
     if code.contains("instance()") && !has_ttl {
         f.push(Finding {
-            severity: Severity::Medium, category: "ttl_archival".into(),
-            title: "Instance Without TTL".into(), description: "Instance may be archived".into(),
-            location: Some(file.to_string()), fix: Some("Extend instance TTL".into()), owasp_id: None,
+            severity: Severity::Medium,
+            category: "ttl_archival".into(),
+            title: "Instance Without TTL".into(),
+            description: "Instance may be archived".into(),
+            location: Some(file.to_string()),
+            fix: Some("Extend instance TTL".into()),
+            owasp_id: None,
         });
     }
     f
@@ -406,10 +468,13 @@ fn check_resource_exhaustion(code: &str, file: &str) -> Vec<Finding> {
         if !ctx.contains("break") && !ctx.contains("< ") && !ctx.contains("MAX") {
             let line = code[..start].lines().count();
             f.push(Finding {
-                severity: Severity::High, category: "resource_exhaustion".into(),
-                title: "Unbounded Loop".into(), description: "Loop without termination limit".into(),
+                severity: Severity::High,
+                category: "resource_exhaustion".into(),
+                title: "Unbounded Loop".into(),
+                description: "Loop without termination limit".into(),
                 location: Some(format!("{}:line:{}", file, line)),
-                fix: Some("Add iteration limit".into()), owasp_id: None,
+                fix: Some("Add iteration limit".into()),
+                owasp_id: None,
             });
         }
     }
@@ -423,10 +488,13 @@ fn check_error_handling(code: &str, file: &str) -> Vec<Finding> {
         if !code[mat.start()..].starts_with("panic_with_error!") {
             let line = code[..mat.start()].lines().count();
             f.push(Finding {
-                severity: Severity::High, category: "error_handling".into(),
-                title: "Improper panic!".into(), description: "Use panic_with_error! instead".into(),
+                severity: Severity::High,
+                category: "error_handling".into(),
+                title: "Improper panic!".into(),
+                description: "Use panic_with_error! instead".into(),
                 location: Some(format!("{}:line:{}", file, line)),
-                fix: Some("Replace with panic_with_error!".into()), owasp_id: None,
+                fix: Some("Replace with panic_with_error!".into()),
+                owasp_id: None,
             });
         }
     }
@@ -437,9 +505,12 @@ fn check_unchecked_calls(code: &str, file: &str) -> Vec<Finding> {
     let mut f = Vec::new();
     if code.contains("invoke_contract") && !code.contains("match ") && !code.contains("if let ") {
         f.push(Finding {
-            severity: Severity::High, category: "unchecked_external_call".into(),
-            title: "Unchecked External Call".into(), description: "invoke_contract result not handled".into(),
-            location: Some(file.to_string()), fix: Some("Handle with match or if-let".into()),
+            severity: Severity::High,
+            category: "unchecked_external_call".into(),
+            title: "Unchecked External Call".into(),
+            description: "invoke_contract result not handled".into(),
+            location: Some(file.to_string()),
+            fix: Some("Handle with match or if-let".into()),
             owasp_id: Some("SC06".into()),
         });
     }
