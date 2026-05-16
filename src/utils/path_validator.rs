@@ -1,5 +1,7 @@
 //! File path canonicalization and traversal prevention.
 
+#![allow(dead_code)]
+
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 

@@ -78,19 +78,20 @@ pub fn detect_secrets(code: &str, file_path: &str) -> Vec<Finding> {
     }
 
     // Check for .env file content being loaded without gitignore
-    if file_path.ends_with(".env") || file_path.contains(".env.") {
-        if !file_path.contains(".example") && !file_path.contains(".template") {
-            findings.push(Finding {
-                severity: Severity::High,
-                category: "secrets".to_string(),
-                title: "Environment File With Secrets".to_string(),
-                description: "This .env file may contain secrets. Ensure it's in .gitignore."
-                    .to_string(),
-                location: Some(file_path.to_string()),
-                fix: Some("Add to .gitignore and use .env.example for templates".to_string()),
-                owasp_id: None,
-            });
-        }
+    if (file_path.ends_with(".env") || file_path.contains(".env."))
+        && !file_path.contains(".example")
+        && !file_path.contains(".template")
+    {
+        findings.push(Finding {
+            severity: Severity::High,
+            category: "secrets".to_string(),
+            title: "Environment File With Secrets".to_string(),
+            description: "This .env file may contain secrets. Ensure it's in .gitignore."
+                .to_string(),
+            location: Some(file_path.to_string()),
+            fix: Some("Add to .gitignore and use .env.example for templates".to_string()),
+            owasp_id: None,
+        });
     }
 
     findings

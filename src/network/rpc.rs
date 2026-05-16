@@ -1,5 +1,7 @@
 //! Soroban RPC client for real testnet interaction.
 
+#![allow(dead_code)]
+
 use crate::config::NetworkConfig;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;

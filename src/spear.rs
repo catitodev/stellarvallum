@@ -15,6 +15,7 @@ pub struct AttackResult {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[allow(dead_code)]
 pub enum AttackStatus {
     Resisted,
     Vulnerable,

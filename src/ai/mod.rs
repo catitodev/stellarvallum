@@ -1,5 +1,7 @@
 //! AI Provider System — Optional, agnostic, with No-AI default.
 
+#![allow(dead_code)]
+
 use async_trait::async_trait;
 use serde_json::Value;
 use thiserror::Error;

@@ -1,5 +1,7 @@
 //! Stellar address validation using StrKey format.
 
+#![allow(dead_code)]
+
 use thiserror::Error;
 
 #[derive(Error, Debug)]

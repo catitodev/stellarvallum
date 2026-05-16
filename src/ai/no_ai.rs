@@ -1,5 +1,7 @@
 //! No-AI mode — Pure Rust heuristics (default). Free, private, instant.
 
+#![allow(dead_code)]
+
 use super::*;
 use async_trait::async_trait;
 

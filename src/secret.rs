@@ -1,5 +1,7 @@
 //! Secret<T> — Wrapper type that prevents accidental logging of sensitive values.
 
+#![allow(dead_code)]
+
 use serde::{Serialize, Serializer};
 use std::fmt;
 

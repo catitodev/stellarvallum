@@ -50,6 +50,7 @@ pub struct DashboardConfig {
 
 impl Config {
     /// Get the AI API key as a Secret (never logged).
+    #[allow(dead_code)]
     pub fn ai_api_key(&self) -> Option<Secret<String>> {
         self.ai.api_key.clone().map(Secret::new)
     }

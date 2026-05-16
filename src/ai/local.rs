@@ -1,5 +1,7 @@
 //! Local LLM provider — Ollama/LM Studio. 100% private.
 
+#![allow(dead_code)]
+
 use super::*;
 use async_trait::async_trait;
 use tracing::{debug, info};

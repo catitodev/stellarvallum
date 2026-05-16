@@ -4,6 +4,7 @@ use regex::Regex;
 use serde::Serialize;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[allow(dead_code)]
 pub enum Severity {
     Info,
     Low,
@@ -49,18 +50,19 @@ pub fn run_dapp_heuristics(code: &str, file: &str) -> Vec<Finding> {
     let mut f = Vec::new();
 
     // Hardcoded RPC URLs (should be env vars)
-    if code.contains("soroban-testnet.stellar.org") || code.contains("horizon-testnet.stellar.org") {
-        if !code.contains("process.env") && !code.contains("import.meta.env") {
-            f.push(Finding {
-                severity: Severity::Medium,
-                category: "dapp_config".into(),
-                title: "Hardcoded RPC URL".into(),
-                description: "RPC/Horizon URL hardcoded — use environment variables".into(),
-                location: Some(file.to_string()),
-                fix: Some("Use process.env.NEXT_PUBLIC_RPC_URL or similar".into()),
-                owasp_id: None,
-            });
-        }
+    if (code.contains("soroban-testnet.stellar.org") || code.contains("horizon-testnet.stellar.org"))
+        && !code.contains("process.env")
+        && !code.contains("import.meta.env")
+    {
+        f.push(Finding {
+            severity: Severity::Medium,
+            category: "dapp_config".into(),
+            title: "Hardcoded RPC URL".into(),
+            description: "RPC/Horizon URL hardcoded — use environment variables".into(),
+            location: Some(file.to_string()),
+            fix: Some("Use process.env.NEXT_PUBLIC_RPC_URL or similar".into()),
+            owasp_id: None,
+        });
     }
 
     // Contract IDs hardcoded (should be configurable)
@@ -223,18 +225,18 @@ pub fn run_pipeline_heuristics(code: &str, file: &str) -> Vec<Finding> {
     let mut f = Vec::new();
 
     // Secrets in plain text in workflow files
-    if code.contains("PRIVATE_KEY:") || code.contains("SECRET_KEY:") {
-        if !code.contains("${{") {
-            f.push(Finding {
-                severity: Severity::Critical,
-                category: "pipeline_security".into(),
-                title: "Secret in Pipeline Config".into(),
-                description: "Secret appears to be hardcoded in CI/CD config instead of using ${{ secrets.* }}".into(),
-                location: Some(file.to_string()),
-                fix: Some("Use ${{ secrets.YOUR_SECRET }} for sensitive values".into()),
-                owasp_id: None,
-            });
-        }
+    if (code.contains("PRIVATE_KEY:") || code.contains("SECRET_KEY:"))
+        && !code.contains("${{")
+    {
+        f.push(Finding {
+            severity: Severity::Critical,
+            category: "pipeline_security".into(),
+            title: "Secret in Pipeline Config".into(),
+            description: "Secret appears to be hardcoded in CI/CD config instead of using ${{ secrets.* }}".into(),
+            location: Some(file.to_string()),
+            fix: Some("Use ${{ secrets.YOUR_SECRET }} for sensitive values".into()),
+            owasp_id: None,
+        });
     }
 
     // Deploy without approval gate

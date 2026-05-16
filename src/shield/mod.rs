@@ -168,7 +168,7 @@ fn calculate_score(findings: &[Finding]) -> u8 {
             Severity::Info => 0,
         })
         .sum();
-    (100i16 - deductions).max(0).min(100) as u8
+    (100i16 - deductions).clamp(0, 100) as u8
 }
 
 fn result_findings_count(_score: &u8) -> usize {

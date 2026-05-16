@@ -1,5 +1,7 @@
 //! CHAIN — Immutable audit trail with SHA-256 hash chain.
 
+#![allow(dead_code)]
+
 use chrono::Utc;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
