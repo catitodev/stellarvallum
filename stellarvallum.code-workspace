@@ -1,0 +1,52 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "stellarvallum"
+    }
+  ],
+  "settings": {
+    "rust-analyzer.cargo.features": "all",
+    "rust-analyzer.checkOnSave.command": "clippy",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "files.exclude": {
+      "target/": true,
+      "**/*.rs.bk": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "rust-lang.rust-analyzer",
+      "tamasfe.even-better-toml",
+      "serayuzgur.crates",
+      "vadimcn.vscode-lldb"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug stellarvallum scan",
+        "cargo": {
+          "args": [
+            "build",
+            "--bin=stellarvallum"
+          ],
+          "filter": {
+            "name": "stellarvallum",
+            "kind": "bin"
+          }
+        },
+        "args": [
+          "scan",
+          "--wasm",
+          "./test.wasm"
+        ],
+        "cwd": "${workspaceFolder}"
+      }
+    ]
+  }
+}

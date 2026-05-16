@@ -1,0 +1,84 @@
+[package]
+name = "stellarvallum"
+version = "0.2.0-testnet"
+edition = "2021"
+authors = ["CatitoDev"]
+description = "The First Wall for Soroban - Testnet-First Security Framework"
+license = "Apache-2.0"
+repository = "https://github.com/catitodev/stellarvallum"
+keywords = ["stellar", "soroban", "security", "audit", "smart-contracts"]
+categories = ["cryptography::cryptocurrencies", "development-tools"]
+rust-version = "1.74"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# HTTP/API
+axum = { version = "0.7", features = ["macros", "ws"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace", "fs"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# Crypto
+sha2 = "0.10"
+hex = "0.4"
+ed25519-dalek = { version = "2", features = ["serde"] }
+
+# Stellar
+stellar-strkey = "0.0.9"
+stellar-xdr = { version = "22", features = ["std", "serde"] }
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Database (SQLite for scans/events)
+sqlx = { version = "0.7", features = ["runtime-tokio", "sqlite"] }
+
+# WASM analysis
+wasmparser = "0.118"
+
+# Regex for heuristics
+regex = "1"
+
+# Async trait
+async-trait = "0.1"
+
+# UUID for scan IDs
+uuid = { version = "1", features = ["v4"] }
+
+# Base32 for StrKey validation
+base32 = "0.5"
+
+[dev-dependencies]
+tokio-test = "0.4"
+wiremock = "0.6"
+proptest = "1.4"
+tempfile = "3"
+assert_cmd = "2.0"
+predicates = "3"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+
+[profile.dev]
+opt-level = 0
+debug = true

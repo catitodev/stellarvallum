@@ -1,0 +1,27 @@
+# StellarVallum Configuration
+# v0.2.0-testnet — The First Wall for Soroban
+
+[network]
+name = "testnet"
+rpc_url = "https://soroban-testnet.stellar.org:443"
+horizon_url = "https://horizon-testnet.stellar.org"
+friendbot_url = "https://friendbot.stellar.org"
+passphrase = "Test SDF Network ; September 2015"
+
+[ai]
+# Provider: "none" (default), "openrouter", "local"
+provider = "none"
+# model = "anthropic/claude-3.5-sonnet"
+# api_key = "${OPENROUTER_API_KEY}"
+# endpoint = "http://localhost:11434"
+
+[shield]
+enabled = true
+
+[spear]
+enabled = true
+max_transactions = 1000
+
+[dashboard]
+enabled = true
+port = 8501
