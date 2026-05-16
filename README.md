@@ -47,6 +47,48 @@
 
 # 🇧🇷 Português
 
+<div align="center">
+
+> *"Na Roma antiga, antes que as legiões marchassem para território inimigo, a primeira coisa que construíam era um* ***vallum*** *— uma muralha que separava o seguro do desconhecido."*
+
+</div>
+
+---
+
+## 📖 A Muralha que Veio Antes do Ataque
+
+Existe um momento na vida de todo desenvolvedor Web3 que define o antes e o depois. Não é quando ele escreve a primeira linha de código. Não é quando compila pela primeira vez. É quando ele faz deploy — e percebe que **não tem como voltar atrás**.
+
+Na blockchain, não existe Ctrl+Z.
+
+Em 2025, **$905 milhões** foram perdidos em 122 incidentes de smart contracts. Contratos que "funcionavam nos testes". Equipes que confiaram no "parece pronto".
+
+A pergunta não é *se* seu contrato tem vulnerabilidades. É *quais* — e se você vai descobri-las antes ou depois de alguém com más intenções.
+
+**O StellarVallum responde essa pergunta em dois segundos.**
+
+Você abre o terminal. Navega até o diretório do seu projeto — qualquer projeto no ecossistema Stellar. Digita um comando. E a muralha se ergue.
+
+Em menos tempo do que leva para tomar um gole de café, o StellarVallum leu cada arquivo, identificou automaticamente o tipo de projeto, e aplicou nove camadas de verificação alinhadas ao OWASP Smart Contract Top 10 (2026). Encontrou a função sem `require_auth`. A aritmética sem `checked_add`. O storage sem TTL. A API key hardcoded na linha 47.
+
+Mas ele não para na análise estática. O **SPEAR** — o braço ofensivo — pega seu contrato, faz deploy na testnet, e lança sete tipos de ataque real contra ele. Não são simulações. São transações reais, na rede real, com evidência on-chain.
+
+E tudo isso acontece **sem que uma única linha do seu código saia da sua máquina**.
+
+Porque segurança não é um checkbox no final do processo. É a primeira coisa que você constrói. É a muralha que vem antes do acampamento.
+
+<div align="center">
+
+```
+stellarvallum scan --path .
+```
+
+**É só isso. A muralha se ergue.**
+
+</div>
+
+---
+
 ## 💡 O que é?
 
 StellarVallum é um **scanner de segurança** para **qualquer projeto** no ecossistema Stellar + Soroban — smart contracts, dApps, backends, APIs, configs, e pipelines CI/CD.
@@ -378,6 +420,48 @@ Apache License 2.0 — veja [LICENSE](LICENSE)
 
 </div>
 
+<div align="center">
+
+> *"In ancient Rome, before legions marched into enemy territory, the first thing they built was a* ***vallum*** *— a wall that separated the safe from the unknown."*
+
+</div>
+
+---
+
+## 📖 The Wall That Came Before the Attack
+
+There's a moment in every Web3 developer's life that defines the before and after. It's not when they write the first line of code. It's not when they compile for the first time. It's when they deploy — and realize **there's no going back**.
+
+On the blockchain, there is no Ctrl+Z.
+
+In 2025, **$905 million** was lost across 122 smart contract incidents. Contracts that "worked in tests". Teams that trusted "looks ready".
+
+The question isn't *whether* your contract has vulnerabilities. It's *which ones* — and whether you'll find them before or after someone with bad intentions does.
+
+**StellarVallum answers that question in two seconds.**
+
+You open the terminal. Navigate to your project directory — any project in the Stellar ecosystem. Type one command. And the wall rises.
+
+In less time than it takes to sip your coffee, StellarVallum has read every file, auto-detected the project type, and applied nine layers of verification aligned with the OWASP Smart Contract Top 10 (2026). It found the function without `require_auth`. The arithmetic without `checked_add`. The storage without TTL. The API key hardcoded on line 47.
+
+But it doesn't stop at static analysis. **SPEAR** — the offensive arm — takes your contract, deploys it to testnet, and launches seven types of real attacks against it. Not simulations. Real transactions, on the real network, with on-chain evidence.
+
+And all of this happens **without a single line of your code leaving your machine**.
+
+Because security isn't a checkbox at the end of the process. It's the first thing you build. It's the wall that comes before the camp.
+
+<div align="center">
+
+```
+stellarvallum scan --path .
+```
+
+**That's it. The wall rises.**
+
+</div>
+
+---
+
 ## 💡 What is it?
 
 StellarVallum is a **security scanner** for **any project** in the Stellar + Soroban ecosystem — smart contracts, dApps, backends, APIs, configs, and CI/CD pipelines.
@@ -691,7 +775,7 @@ Apache License 2.0 — see [LICENSE](LICENSE)
 <br/><br/>
 
 <a href="https://github.com/catitodev/stellarvallum">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=14&duration=4000&pause=2000&color=666666&center=true&vCenter=true&repeat=true&width=400&height=20&lines=Segurança+não+é+um+produto%2C+é+um+processo." alt="Quote"/>
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=14&duration=4000&pause=2000&color=666666&center=true&vCenter=true&repeat=true&width=500&height=20&lines=Segurança+não+é+um+produto%2C+é+um+processo.;Security+is+not+a+product%2C+it's+a+process.;Validamos+na+testnet+para+construir+confiança+na+mainnet.;We+validate+on+testnet+to+build+confidence+for+mainnet.;A+muralha+se+ergue+antes+do+ataque.;The+wall+rises+before+the+attack." alt="Quote"/>
 </a>
 
 </div>
