@@ -1,0 +1,14 @@
+# Gitleaks configuration for StellarVallum
+# https://github.com/gitleaks/gitleaks
+
+title = "StellarVallum Gitleaks Config"
+
+# Allow paths that contain test fixtures for the secret detector itself.
+# These are NOT real secrets — they are synthetic patterns used to verify
+# that our secret detection engine works correctly.
+[allowlist]
+  description = "Test fixtures for secret detection module"
+  paths = [
+    '''src/shield/secrets\.rs''',
+    '''tests/.*'''
+  ]
