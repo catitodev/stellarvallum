@@ -3,9 +3,21 @@
 use super::heuristics::{Finding, Severity};
 use regex::Regex;
 
+/// Remove #[cfg(test)] blocks from code to avoid false positives on test fixtures.
+fn strip_test_blocks(code: &str) -> String {
+    if let Some(test_start) = code.find("#[cfg(test)]") {
+        code[..test_start].to_string()
+    } else {
+        code.to_string()
+    }
+}
+
 /// Detect hardcoded secrets, API keys, and private keys in source code.
 pub fn detect_secrets(code: &str, file_path: &str) -> Vec<Finding> {
     let mut findings = Vec::new();
+
+    // Skip test modules — they contain synthetic patterns for testing the detector
+    let analysis_code = strip_test_blocks(code);
 
     let patterns: Vec<(&str, &str, Severity)> = vec![
         // Stellar secret keys (S + 55 base32 chars)
@@ -35,11 +47,11 @@ pub fn detect_secrets(code: &str, file_path: &str) -> Vec<Finding> {
             Err(_) => continue,
         };
 
-        for mat in re.find_iter(code) {
-            let line_num = code[..mat.start()].lines().count();
+        for mat in re.find_iter(&analysis_code) {
+            let line_num = analysis_code[..mat.start()].lines().count();
 
             // Skip if it's in a comment or test
-            let line = code.lines().nth(line_num.saturating_sub(1)).unwrap_or("");
+            let line = analysis_code.lines().nth(line_num.saturating_sub(1)).unwrap_or("");
             if line.trim_start().starts_with("//")
                 || line.trim_start().starts_with('#')
                 || line.contains("example")

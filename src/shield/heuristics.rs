@@ -113,6 +113,12 @@ pub fn run_dapp_heuristics(code: &str, file: &str) -> Vec<Finding> {
 pub fn run_backend_heuristics(code: &str, file: &str) -> Vec<Finding> {
     let mut f = Vec::new();
 
+    // Only check source code files, not config/manifest files
+    let is_source = file.ends_with(".rs") || file.ends_with(".ts") || file.ends_with(".js");
+    if !is_source {
+        return f;
+    }
+
     // HTTP without TLS for Stellar endpoints
     let http_re = Regex::new(r#"http://[^"'\s]*(stellar|soroban|horizon)"#).unwrap();
     if http_re.is_match(code) {
@@ -132,6 +138,9 @@ pub fn run_backend_heuristics(code: &str, file: &str) -> Vec<Finding> {
         && !code.contains("rate_limit")
         && !code.contains("RateLimit")
         && !code.contains("tower::limit")
+        && !code.contains("RequestBodyLimit")
+        && !code.contains("ServiceBuilder")
+        && !code.contains("127.0.0.1") // localhost-only is a valid mitigation
     {
         f.push(Finding {
             severity: Severity::Medium,

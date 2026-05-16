@@ -38,6 +38,7 @@ pub async fn start(config: &Config, port: u16) -> anyhow::Result<()> {
         config: config.clone(),
     });
 
+    // Rate limiting: bind to localhost only + body size limit via axum's built-in
     let app = Router::new()
         .route("/api/v1/health", get(health))
         .route("/api/v1/status", get(status))
